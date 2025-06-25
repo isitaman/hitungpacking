@@ -1,0 +1,236 @@
+<html lang="id" class="bg-[#f5f0e6] min-h-screen flex items-center justify-center">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kalkulator Biaya Packing Anggrek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: "Google Sans", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <main
+    class="w-[90vw] max-w-3xl bg-[#fdf7ec] rounded-3xl shadow-lg p-8 md:p-12 text-[#5a3e1b] flex flex-col gap-6"
+  >
+    <h1 class="text-3xl font-semibold text-center mb-4">Kalkulator Biaya Packing Anggrek</h1>
+
+    <label for="jenis" class="font-medium text-lg">Jenis Packing</label>
+    <select
+      id="jenis"
+      class="w-full rounded-xl border border-[#c9b89a] bg-[#f9f5e7] px-4 py-3 text-[#5a3e1b] focus:outline-none focus:ring-2 focus:ring-[#bfa46f] transition"
+    >
+      <option value="kardus1kg">Kardus Khusus 1kg</option>
+      <option value="kardus2kg">Kardus Khusus 2kg</option>
+      <option value="customKardus">Custom Kardus</option>
+      <option value="customKayu">Custom Kayu</option>
+    </select>
+
+    <div id="ukuranBox" class="hidden flex flex-col gap-4">
+      <label for="panjang" class="font-medium text-lg">Panjang (cm)</label>
+      <input
+        type="number"
+        id="panjang"
+        class="rounded-xl border border-[#c9b89a] bg-[#f9f5e7] px-4 py-3 text-[#5a3e1b] focus:outline-none focus:ring-2 focus:ring-[#bfa46f] transition"
+      />
+
+      <label for="lebar" class="font-medium text-lg">Lebar (cm)</label>
+      <input
+        type="number"
+        id="lebar"
+        class="rounded-xl border border-[#c9b89a] bg-[#f9f5e7] px-4 py-3 text-[#5a3e1b] focus:outline-none focus:ring-2 focus:ring-[#bfa46f] transition"
+      />
+
+      <label for="tinggi" class="font-medium text-lg">Tinggi (cm)</label>
+      <input
+        type="number"
+        id="tinggi"
+        class="rounded-xl border border-[#c9b89a] bg-[#f9f5e7] px-4 py-3 text-[#5a3e1b] focus:outline-none focus:ring-2 focus:ring-[#bfa46f] transition"
+      />
+    </div>
+
+    <div id="beratWrapper" class="flex flex-col gap-2">
+    <label for="jumlah" class="font-medium text-lg">Berat Paket (kg)</label>
+    <input
+      type="number"
+      id="jumlah"
+      value="1"
+      min="1"
+      class="rounded-xl border border-[#c9b89a] bg-[#f9f5e7] px-4 py-3 text-[#5a3e1b] focus:outline-none focus:ring-2 focus:ring-[#bfa46f] transition"
+    />
+    </div>
+
+    <button
+      onclick="hitungTotal()"
+      class="mt-4 bg-[#bfa46f] hover:bg-[#a88f3a] text-white font-semibold rounded-xl py-3 transition"
+      type="button"
+    >
+      Hitung Total
+    </button>
+
+    <div
+      id="hasil"
+      class="mt-6 text-xl font-bold text-center text-[#6b4f1d]"
+      aria-live="polite"
+    ></div>
+
+    <section
+      id="deskripsi"
+      class="mt-4 bg-[#f9f5e7] rounded-xl border border-dashed border-[#c9b89a] p-6 text-[#5a3e1b] whitespace-pre-wrap leading-relaxed max-h-72 overflow-y-auto"
+      aria-live="polite"
+    ></section>
+  </main>
+
+  <script>
+    const jenisSelect = document.getElementById("jenis");
+    const ukuranBox = document.getElementById("ukuranBox");
+    const beratWrapper = document.getElementById("beratWrapper");
+
+    jenisSelect.addEventListener("change", function () {
+      const jenis = this.value;
+      const isCustom = jenis === "customKardus" || jenis === "customKayu";
+      ukuranBox.classList.toggle("hidden", !isCustom);
+      beratWrapper.classList.toggle("hidden", isCustom);
+      
+      document.getElementById("jumlah").value = '';
+      document.getElementById("tinggi").value = '';
+      document.getElementById("lebar").value = '';
+      document.getElementById("panjang").value = '';
+    });
+
+    function getJasaBorongan(jenis, beratKg) {
+      if (jenis === "kardus1kg" || jenis === "kardus2kg") {
+        jenis = "kardus";
+      }
+      const data = [
+        { max: 4, kardus: 2000, customKardus: 3500, customKayu: 4000 },
+        { max: 10, kardus: 3000, customKardus: 4500, customKayu: 6000 },
+        { max: 20, kardus: 4000, customKardus: 5500, customKayu: 8000 },
+        { max: 30, kardus: 5000, customKardus: 6500, customKayu: 10000 },
+        { max: 40, kardus: 6000, customKardus: 7500, customKayu: 12000 },
+        { max: 50, kardus: 7000, customKardus: 8500, customKayu: 14000 },
+        { max: 60, kardus: 8000, customKardus: 9500, customKayu: 16000 },
+        { max: 70, kardus: 9000, customKardus: 10500, customKayu: 18000 },
+        { max: 80, kardus: 10000, customKardus: 11500, customKayu: 20000 },
+        { max: 90, kardus: 11000, customKardus: 12500, customKayu: 22000 },
+        { max: 100, kardus: 12000, customKardus: 13500, customKayu: 24000 },
+        { max: 110, kardus: 13000, customKardus: 14500, customKayu: 26000 },
+        { max: 120, kardus: 14000, customKardus: 15500, customKayu: 28000 },
+        { max: 130, kardus: 15000, customKardus: 16500, customKayu: 30000 },
+        { max: 140, kardus: 16000, customKardus: 17500, customKayu: 32000 },
+        { max: 150, kardus: 17000, customKardus: 18500, customKayu: 34000 },
+        { max: 160, kardus: 18000, customKardus: 19500, customKayu: 36000 },
+      ];
+      for (const entry of data) {
+        if (beratKg <= entry.max) {
+          return entry[jenis];
+        }
+      }
+      return data[data.length - 1][jenis];
+    }
+
+    function hitungTotal() {
+      const jenis = document.getElementById("jenis").value;
+      const jumlah = parseInt(document.getElementById("jumlah").value);
+      let total = 0;
+      let deskripsi = "";
+      let beratPaket = 0;
+
+      if (jenis === "kardus1kg") {
+        beratPaket = jumlah;
+        const jasa = getJasaBorongan(jenis, beratPaket);
+        total = 6000 + jasa;
+        deskripsi = "📦 Kardus Khusus 1kg\n\n" +
+                    `• Berat paket: ${beratPaket} kg\n` +
+                    "• Harga per box: Rp6.000\n" +
+                    `• Biaya jasa borongan: Rp${jasa.toLocaleString("id-ID")}\n`;
+      } else if (jenis === "kardus2kg") {
+        beratPaket = jumlah;
+        const jasa = getJasaBorongan(jenis, beratPaket);
+        total = 7000 + jasa;
+        deskripsi = "📦 Kardus Khusus 2kg\n\n" +
+                    `• Berat paket: ${beratPaket} kg\n` +
+                    "• Harga per box: Rp7.000\n"+
+                    `• Biaya jasa borongan: Rp${jasa.toLocaleString("id-ID")}\n`;
+      } else {
+        const p = parseFloat(document.getElementById("panjang").value);
+        const l = parseFloat(document.getElementById("lebar").value);
+        const t = parseFloat(document.getElementById("tinggi").value);
+        const volume = (p * l * t) / 6000;
+        beratPaket = volume;
+
+        const luas =
+          2 * (p / 100 * (l / 100) + p / 100 * (t / 100) + (l / 100) * (t / 100));
+        const berat = luas * 0.5;
+        const bahan = berat * 10000;
+        const jasa = getJasaBorongan(jenis, volume);
+        const lakban = 1000;
+
+        if (jenis === "customKardus") {
+          total = bahan + jasa + lakban;
+          deskripsi =
+            "📦 Custom Kardus\n\n" +
+            "📐 Dimensi & Berat Paket\n" +
+            `• Berat paket: ${volume.toFixed(2)} kg\n` +
+            `• Luas bahan kardus: ${luas.toFixed(2)} m²\n` +
+            `• Berat bahan kardus: ${berat.toFixed(2)} kg\n\n` +
+
+            "📦 Biaya Kardus\n" +
+            `• Biaya bahan kardus: Rp${bahan.toLocaleString("id-ID")}\n\n` +
+
+            "🛠️ Biaya Lainnya\n" +
+            `• Biaya jasa borongan: Rp${jasa.toLocaleString("id-ID")}\n` +
+            `• Biaya lakban: Rp1.000`;
+        } else if (jenis === "customKayu") {
+          const jumlahRing = Math.floor(t / 40) - 1;
+          const pM = p / 100,
+            lM = l / 100,
+            tM = t / 100;
+          const kayuUtama = (4 * (pM + lM)) + (4 * tM);
+          const kayuRing = jumlahRing * ( 2 * (pM + lM) );
+          const totalKayu = kayuUtama + kayuRing;
+          const biayaKayu = totalKayu * 1500;
+
+          const pakuAtasBawah = 4 * 4 * 2;
+          const pakuRing = jumlahRing * 4 * 2;
+          const totalPaku = pakuAtasBawah + pakuRing;
+          const beratPakuKg = (totalPaku * 2) / 1000;
+          const biayaPaku = totalPaku * 40;
+
+          total = biayaKayu + biayaPaku + bahan + jasa + lakban;
+          deskripsi =
+            "📦 Custom Kayu dengan Lapisan Kardus\n\n" +
+
+            "🧱 Kayu\n" +
+            `• Jumlah ring tengah: ${jumlahRing}\n` +
+            `• Total kayu: ${totalKayu.toFixed(2)} m\n` +
+            `• Biaya kayu: Rp${biayaKayu.toLocaleString("id-ID")}\n\n` +
+
+            "📌 Paku\n" +
+            `• Jumlah paku: ${totalPaku} pcs\n` +
+            `• Berat paku: ${beratPakuKg.toFixed(2)} kg\n` +
+            `• Biaya paku: Rp${biayaPaku.toLocaleString("id-ID")}\n\n` +
+
+            "📦 Kardus Pelapis\n" +
+            `• Luas kardus pelapis: ${luas.toFixed(2)} m²\n` +
+            `• Berat kardus pelapis: ${berat.toFixed(2)} kg\n` +
+            `• Biaya bahan kardus: Rp${bahan.toLocaleString("id-ID")}\n\n` +
+
+            "🛠️ Biaya Lainnya\n" +
+            `• Biaya jasa borongan: Rp${jasa.toLocaleString("id-ID")}\n` +
+            `• Biaya lakban: Rp1.000`;
+        }
+      }
+
+      document.getElementById("hasil").textContent =
+        "Total Biaya: Rp" + total.toLocaleString("id-ID");
+      document.getElementById("deskripsi").textContent = deskripsi;
+    }
+  </script>
+</body>
+</html>
