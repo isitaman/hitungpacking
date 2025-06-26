@@ -187,15 +187,7 @@
             `• Biaya jasa borongan: Rp${jasa.toLocaleString("id-ID")}\n` +
             `• Biaya lakban: Rp1.000`;
         } else if (jenis === "customKayu") {
-          let pembagi = t / 40;
-          let jumlahRing = Math.floor(pembagi);
-          
-          if (pembagi - jumlahRing >= 0.5) {
-            jumlahRing += 1;
-          }
-          
-          jumlahRing = Math.max(jumlahRing - 1, 0); // tetap tidak boleh negatif
-
+          const jumlahRing = Math.floor(t / 40) - 1;
           const pM = p / 100,
             lM = l / 100,
             tM = t / 100;
